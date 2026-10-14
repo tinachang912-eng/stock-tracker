@@ -1,7 +1,25 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101a32"><title>股票損益管家</title>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#071e46"><title>股票損益管家</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;color:#18223c;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}header{background:#101a32;color:white;padding:25px max(20px,calc((100vw - 1140px)/2));display:flex;justify-content:space-between;gap:20px;align-items:center}h1{font-size:25px;margin:4px 0}h2{font-size:18px;margin:0 0 18px}.subtitle{color:#b8c4dc;font-size:13px}main{max-width:1140px;margin:auto;padding:24px 16px 60px}.panel{background:white;padding:24px;border:1px solid #e6eaf2;border-radius:16px;margin-bottom:20px;box-shadow:0 5px 25px #17294a0a}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}.stat{background:white;padding:21px;border:1px solid #e6eaf2;border-radius:15px}.stat small{color:#65748e}.stat b{display:block;margin-top:10px;font-size:25px}.positive{color:#d73352}.negative{color:#168475}.secondary{color:#66738e}.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}label{display:grid;gap:7px;font-size:13px;font-weight:650;color:#394761}input,select{min-width:0;width:100%;padding:11px 12px;border:1px solid #cad3e1;border-radius:9px;background:white;color:#17243e}input:focus,select:focus{outline:2px solid #9eb8ef}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:0;padding:11px 17px;background:#3158b5;color:white;border-radius:9px;font-weight:650}.btn.light{background:#eef2f9;color:#2b467f}.btn.warn{background:#fff0f0;color:#ae2442}.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:end}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{padding:14px 12px;border-bottom:1px solid #ebeff5;text-align:left;font-size:14px}th{color:#697890;background:#f8faff;font-weight:650}td:last-child{text-align:right}.pill{display:inline-block;padding:5px 10px;border-radius:30px;background:#eff5f3;font-weight:650}.pill.win{color:#c52e50;background:#fff0f3}.pill.loss{color:#128272;background:#edf9f5}.tiny{padding:7px 10px;margin-left:6px;border:0;border-radius:7px;background:#eaf0f9;color:#294779}.tiny.delete{background:#fff0f0;color:#b52545}.hint{color:#758199;font-size:13px}.empty{text-align:center;padding:35px;color:#79869b}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center}.mini{font-size:12px;color:#cbd5e8}.notice{font-size:13px;color:#586985;margin-top:12px}@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:570px){header{display:block}.stats,.form-grid,.filters{grid-template-columns:1fr}.panel{padding:17px}.stat b{font-size:22px}.topbar{align-items:flex-start;flex-direction:column}}
+
+/* 科技藍主題 — 深海藍、數位電光藍、冰藍 */
+:root{--tech-navy:#071e46;--tech-blue:#0969e8;--tech-cyan:#19c2ff;--tech-ice:#eaf5ff;--tech-border:#cfe1f5;--tech-text:#15345d;background:#f1f7ff;color:var(--tech-text)}
+body{background:linear-gradient(180deg,#e9f3ff 0,#f7faff 320px,#f5f9ff 100%)}
+header{background:linear-gradient(112deg,#061a40 0%,#0b3b82 65%,#086bc6 100%);border-bottom:3px solid #28bffa;box-shadow:0 8px 28px #075ab524}
+.subtitle{color:#c4e7ff}
+.panel{border:1px solid var(--tech-border);box-shadow:0 8px 24px #1354a10b}
+h2{color:#0b438c}
+.stat{border:1px solid #cfe2fb;border-top:3px solid #159cf0;background:linear-gradient(155deg,#ffffff 55%,#f0f8ff);box-shadow:0 6px 18px #0b63bf0b}
+.stat small{color:#466b98}.stat b{color:#074a9f}.stat b.positive,.positive{color:#cf355b}.stat b.negative,.negative{color:#09816f}
+.btn{background:linear-gradient(105deg,#0875ec,#0050be);box-shadow:0 3px 10px #0062cc26}
+.btn:hover{filter:brightness(1.08)}.btn.light{background:#e7f2ff;color:#0952a6;box-shadow:none;border:1px solid #c9e3ff}
+label{color:#234f81}input,select{border-color:#bfd5ed;color:#15345d}input:focus,select:focus{outline:2px solid #5bb9ff;border-color:#0788e8}
+th{background:#eaf4ff;color:#115296}th,td{border-bottom-color:#dfebf8}
+tr:hover td{background:#f6fbff}
+.tiny{background:#e4f1ff;color:#07529f}
+.pill.win{color:#bf2752;background:#ffedf2}.pill.loss{color:#087768;background:#e6f8f3}
+.hint,.secondary{color:#547396}
 </style></head><body>
 <header><div><div class="subtitle">PERSONAL INVESTMENT JOURNAL</div><h1>📈 股票損益管家</h1><div class="subtitle">交易紀錄・區間損益・交易勝率</div></div><div class="mini">所有資料僅儲存在這台裝置的瀏覽器</div></header>
 <main>
