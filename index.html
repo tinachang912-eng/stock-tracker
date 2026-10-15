@@ -23,10 +23,7 @@ tr:hover td{background:#f6fbff}
 </style></head><body>
 <header><div><div class="subtitle">PERSONAL INVESTMENT JOURNAL</div><h1>📈 股票損益管家</h1><div class="subtitle">交易紀錄・區間損益・交易勝率</div></div><div class="mini">所有資料僅儲存在這台裝置的瀏覽器</div></header>
 <main>
-<section class="stats" aria-label="統計摘要">
-<div class="stat"><small>淨損益</small><b id="net">$0</b></div><div class="stat"><small>獲利總額</small><b id="winsTotal" class="positive">$0</b></div><div class="stat"><small>虧損總額</small><b id="lossTotal" class="negative">$0</b></div><div class="stat"><small>勝率</small><b id="winRate">0.00%</b></div>
-<div class="stat"><small>總筆數</small><b id="count">0</b></div><div class="stat"><small>獲利筆數</small><b id="winCount" class="positive">0</b></div><div class="stat"><small>虧損筆數</small><b id="lossCount" class="negative">0</b></div><div class="stat"><small>持平筆數</small><b id="flatCount">0</b></div>
-</section>
+
 <section class="panel"><h2 id="formTitle">新增交易紀錄</h2><form id="entryForm"><div class="form-grid">
 <label>股票代號或名稱 <input id="stock" required maxlength="80" placeholder="例如：2330 或 台積電"></label>
 <label>交易日期 <input id="date" type="date" required></label>
@@ -57,8 +54,7 @@ const body=$('monthlyRows');body.replaceChildren();$('monthlyEmpty').hidden=grou
 function renderAnnual(){const groups=new Map();records.forEach(r=>{const yr=r.date.slice(0,4);if(!groups.has(yr))groups.set(yr,{count:0,win:0,loss:0,gain:0,cost:0});const g=groups.get(yr);g.count++;if(r.direction==='win'){g.win++;g.gain+=r.amount}else if(r.direction==='loss'){g.loss++;g.cost+=r.amount}});
 const body=$('annualRows');body.replaceChildren();$('annualEmpty').hidden=groups.size>0;[...groups].sort((a,b)=>b[0].localeCompare(a[0])).forEach(([year,g])=>{const tr=document.createElement('tr');[year,fmt(g.gain),'−'+fmt(g.cost),fmt(g.gain-g.cost),String(g.count),String(g.win),String(g.loss),(g.count?100*g.win/g.count:0).toFixed(2)+'%'].forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i===1)td.className='positive';if(i===2)td.className='negative';tr.append(td)});body.append(tr)})}
 function filtered(){const s=$('start').value,e=$('end').value,q=$('keyword').value.trim().toLowerCase();return records.filter(x=>(!s||x.date>=s)&&(!e||x.date<=e)&&(!q||x.stock.toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date)||String(b.id).localeCompare(String(a.id)))}
-function refresh(){const list=filtered(),positive=list.filter(x=>x.direction==='win'),negative=list.filter(x=>x.direction==='loss'),flat=list.filter(x=>x.direction==='flat'),w=positive.reduce((n,x)=>n+x.amount,0),l=negative.reduce((n,x)=>n+x.amount,0),net=w-l;
-$('net').textContent=fmt(net);$('net').className=net>0?'positive':net<0?'negative':'';$('winsTotal').textContent=fmt(w);$('lossTotal').textContent='−'+fmt(l);$('winRate').textContent=(list.length?positive.length/list.length*100:0).toFixed(2)+'%';$('count').textContent=list.length;$('winCount').textContent=positive.length;$('lossCount').textContent=negative.length;$('flatCount').textContent=flat.length;$('visibleCount').textContent='（'+list.length+' 筆）';
+function refresh(){const list=filtered();$('visibleCount').textContent='（'+list.length+' 筆）';
 renderAnnual();renderMonthly();const body=$('rows');body.replaceChildren();$('empty').hidden=list.length>0;
 list.forEach(r=>{const tr=document.createElement('tr');const cell=t=>{const td=document.createElement('td');td.textContent=t;tr.append(td);return td};cell(r.date);cell(r.stock);const badge=cell(''),span=document.createElement('span');span.className='pill '+(r.direction==='win'?'win':r.direction==='loss'?'loss':'');span.textContent=r.direction==='win'?'獲利':r.direction==='loss'?'虧損':'持平';badge.append(span);const value=cell((r.direction==='loss'?'−':r.direction==='win'?'+':'')+fmt(r.amount));value.className=r.direction==='win'?'positive':r.direction==='loss'?'negative':'';const tools=cell('');const edit=document.createElement('button');edit.className='tiny';edit.textContent='修改';edit.onclick=()=>editRecord(r.id);const del=document.createElement('button');del.className='tiny delete';del.textContent='刪除';del.onclick=()=>deleteRecord(r.id);tools.append(edit,del);body.append(tr)})}
 function clearForm(){editing=null;$('entryForm').reset();$('date').value=today();$('formTitle').textContent='新增交易紀錄';$('saveButton').textContent='＋ 新增紀錄';$('cancelEdit').hidden=true}
