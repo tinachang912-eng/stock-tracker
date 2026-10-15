@@ -20,8 +20,9 @@ tr:hover td{background:#f6fbff}
 .tiny{background:#e4f1ff;color:#07529f}
 .pill.win{color:#bf2752;background:#ffedf2}.pill.loss{color:#087768;background:#e6f8f3}
 .hint,.secondary{color:#547396}
+.refresh-btn{border:1px solid #6bd1ff;background:#e9f6ff;color:#073d83;padding:11px 16px;border-radius:10px;font-weight:750;white-space:nowrap}.refresh-btn:active{transform:scale(.98)}.header-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}@media(max-width:640px){.header-controls{justify-content:flex-start;margin-top:14px}}
 </style></head><body>
-<header><div><div class="subtitle">PERSONAL INVESTMENT JOURNAL</div><h1>📈 股票損益管家</h1><div class="subtitle">交易紀錄・區間損益・交易勝率</div></div><div class="mini">所有資料僅儲存在這台裝置的瀏覽器</div></header>
+<header><div><div class="subtitle">PERSONAL INVESTMENT JOURNAL</div><h1>📈 股票損益管家</h1><div class="subtitle">交易紀錄・區間損益・交易勝率</div></div><div class="header-controls"><div class="mini">所有資料僅儲存在這台裝置的瀏覽器</div><button type="button" id="reloadPage" class="refresh-btn" aria-label="重新整理網頁">⟳ 重新整理</button></div></header>
 <main>
 
 <section class="panel"><h2 id="formTitle">新增交易紀錄</h2><form id="entryForm"><div class="form-grid">
@@ -66,6 +67,7 @@ function download(name,content,type){const url=URL.createObjectURL(new Blob([con
 $('exportCsv').onclick=()=>{const esc=v=>'"'+String(v).replaceAll('"','""')+'"';const lines=[['日期','股票代號或名稱','損益類型','損益金額(TWD)'],...filtered().map(r=>[r.date,r.stock,r.direction==='win'?'獲利':r.direction==='loss'?'虧損':'持平',r.direction==='loss'?-r.amount:r.amount])];download('股票損益清單.csv','\uFEFF'+lines.map(line=>line.map(esc).join(',')).join('\r\n'),'text/csv;charset=utf-8')};
 $('backup').onclick=()=>download('股票損益完整備份.json',JSON.stringify(records,null,2),'application/json');
 $('importButton').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data)||!data.every(r=>r&&typeof r.id==='string'&&typeof r.stock==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)&&['win','loss','flat'].includes(r.direction)&&Number.isSafeInteger(r.amount)&&r.amount>=0&&(r.direction==='flat'?r.amount===0:r.amount>0)))throw Error('備份資料格式不正確');if(!confirm('匯入將取代目前所有資料，建議先備份。確定繼續？'))return;const before=records;records=data;if(!save()){records=before;return}clearForm();refresh();alert('匯入完成')}catch(err){alert('匯入失敗：'+err.message)}finally{e.target.value=''}};
+$('reloadPage').addEventListener('click',()=>{window.location.reload()});
 defaultRange();refresh();
 })();
 </script></body></html>
