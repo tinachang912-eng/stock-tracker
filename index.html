@@ -22,7 +22,16 @@ tr:hover td{background:#f6fbff}
 .hint,.secondary{color:#547396}
 .refresh-btn{border:1px solid #6bd1ff;background:#e9f6ff;color:#073d83;padding:11px 16px;border-radius:10px;font-weight:750;white-space:nowrap}.refresh-btn:active{transform:scale(.98)}.header-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}@media(max-width:640px){.header-controls{justify-content:flex-start;margin-top:14px}}
 .filters{grid-template-columns:repeat(4,minmax(0,1fr))}.filter-reset{align-self:end}.filter-reset .btn{width:100%;min-height:43px}@media(max-width:700px){.form-grid,.filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid>label,.filters>label{min-width:0}.form-grid input,.form-grid select,.filters input{width:100%;min-width:0;font-size:14px;padding:10px 8px}}
-.year-target-form{display:grid;grid-template-columns:150px minmax(160px,260px) auto;gap:12px;align-items:end;margin:14px 0 18px}.year-target-form button{min-height:43px}@media(max-width:700px){.year-target-form{grid-template-columns:repeat(2,minmax(0,1fr))}.year-target-form button{grid-column:1/-1}} </style></head><body>
+.year-target-form{display:grid;grid-template-columns:150px minmax(160px,260px) auto;gap:12px;align-items:end;margin:14px 0 18px}.year-target-form button{min-height:43px}@media(max-width:700px){.year-target-form{grid-template-columns:repeat(2,minmax(0,1fr))}.year-target-form button{grid-column:1/-1}} 
+/* 手機雙欄日期：增加欄距，修正 iOS 日期欄內建最小寬度造成的擠壓 */
+@media (max-width:700px){
+  .form-grid,.filters{column-gap:18px;row-gap:14px;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .form-grid>label,.filters>label{min-width:0;max-width:100%;overflow:hidden}
+  .form-grid input,.form-grid select,.filters input{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
+  .form-grid input[type="date"],.filters input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;font-size:13px;padding:9px 4px}
+  .form-grid input[type="date"]::-webkit-date-and-time-value,.filters input[type="date"]::-webkit-date-and-time-value{min-width:0;text-align:left}
+}
+</style></head><body>
 <header><div><div class="subtitle">PERSONAL INVESTMENT JOURNAL</div><h1>📈 股票損益管家</h1><div class="subtitle">交易紀錄・區間損益・交易勝率</div></div><div class="header-controls"><div class="mini">所有資料僅儲存在這台裝置的瀏覽器</div><button type="button" id="reloadPage" class="refresh-btn" aria-label="重新整理網頁">⟳ 重新整理</button></div></header>
 <main>
 
