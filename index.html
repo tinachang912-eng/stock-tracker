@@ -32,22 +32,24 @@ tr:hover td{background:#f6fbff}
   .form-grid input[type="date"]::-webkit-date-and-time-value,.filters input[type="date"]::-webkit-date-and-time-value{min-width:0;text-align:left}
 }
 
-/* 日期欄位：保留原生日期選擇器，手機使用等寬文字避免 Safari 破框 */
-.form-grid,.filters{min-width:0;column-gap:20px;row-gap:16px}
-.form-grid>label,.filters>label{min-width:0;width:100%;max-width:100%}
-.form-grid input,.form-grid select,.filters input{box-sizing:border-box;min-width:0;max-width:100%}
-.date-field{position:relative;display:block;min-width:0;width:100%;height:45px}
-.date-field>input[type=date]{display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;height:45px}
-.date-visible{display:none}
-@media(max-width:700px){
- .form-grid,.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;row-gap:16px}
- .form-grid>label,.filters>label{min-width:0;max-width:100%;overflow:visible}
- .date-field{height:44px}
- .date-field>input[type=date]{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:2;cursor:pointer}
- .date-visible{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-width:0;padding:0 4px;border:1px solid #bfd5ed;border-radius:9px;background:#fff;color:#15345d;font-weight:650;font-size:clamp(11px,3vw,14px);letter-spacing:-.25px;white-space:nowrap;pointer-events:none}
- .date-field:focus-within .date-visible{outline:2px solid #5bb9ff;border-color:#0788e8}
- .filter-reset{min-width:0}
- .filter-reset .btn{width:100%;min-height:44px;padding:8px 5px;font-size:13px}
+/* 直式、橫式與桌機共用：所有欄位嚴格限制於網格內 */
+.form-grid,.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 20px;align-items:start;width:100%;min-width:0}
+.form-grid>label,.filters>label{display:flex;flex-direction:column;gap:8px;min-width:0;max-width:100%;width:100%;overflow:visible}
+.form-grid>label>input,.form-grid>label>select,.filters>label>input{flex:0 0 44px;height:44px;min-height:44px;max-height:44px;min-width:0;max-width:100%;width:100%;box-sizing:border-box}
+.date-field{position:relative;display:block;flex:0 0 44px;width:100%;max-width:100%;min-width:0;height:44px;min-height:44px;max-height:44px;overflow:hidden}
+.date-field>input[type=date]{position:absolute;inset:0;display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;height:44px;min-height:44px;max-height:44px;margin:0;padding:0;opacity:0;z-index:2;cursor:pointer}
+.date-visible{box-sizing:border-box;display:flex;align-items:center;justify-content:center;position:absolute;inset:0;width:100%;max-width:100%;height:44px;padding:0 6px;border:1px solid #bfd5ed;border-radius:9px;background:#fff;color:#15345d;font-weight:650;font-size:clamp(12px,1.4vw,15px);white-space:nowrap;letter-spacing:0;overflow:hidden;pointer-events:none}
+.date-field:focus-within .date-visible{outline:2px solid #5bb9ff;border-color:#0788e8}
+.filter-reset{min-width:0;align-self:end}
+.filter-reset .btn{box-sizing:border-box;display:block;width:100%;min-height:44px;padding:8px 6px;white-space:normal}
+@media(max-width:900px){
+ .form-grid,.filters{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;row-gap:18px}
+ .date-visible{font-size:clamp(11px,2.4vw,14px)}
+}
+@media(max-width:430px){
+ .form-grid,.filters{column-gap:14px;row-gap:16px}
+ .date-visible{font-size:12px;padding:0 3px}
+ .filter-reset .btn{font-size:13px}
 }
 </style></head><body>
 <header><div><div class="subtitle">PERSONAL INVESTMENT JOURNAL</div><h1>📈 股票損益管家</h1><div class="subtitle">交易紀錄・區間損益・交易勝率</div></div><div class="header-controls"><div class="mini">所有資料僅儲存在這台裝置的瀏覽器</div><button type="button" id="reloadPage" class="refresh-btn" aria-label="重新整理網頁">⟳ 重新整理</button></div></header>
