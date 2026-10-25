@@ -93,13 +93,13 @@ tr:hover td{background:#f6fbff}
 <section class="panel"><h2>歷年年度績效統計</h2><p class="hint">依所有交易紀錄按年度統計，不受日期區間與股票搜尋條件限制。年度達成率＝年度淨損益 ÷ 目標金額 × 100%。</p><div class="year-target-form"><label>目標年度<input id="targetYear" type="number" min="2000" max="2100" step="1"></label><label>年度目標淨獲利（元）<input id="targetAmount" type="number" min="1" step="1" placeholder="請輸入正整數"></label><button class="btn" type="button" id="saveTarget">儲存年度目標</button></div><div class="table-wrap"><table><thead><tr><th>年度</th><th>總獲利金額</th><th>總虧損金額</th><th>淨損益</th><th>總筆數</th><th>獲利筆數</th><th>虧損筆數</th><th>勝率</th><th>年度目標</th><th>達成率</th></tr></thead><tbody id="annualRows"></tbody></table></div><div id="annualEmpty" class="empty" hidden>尚無年度交易紀錄。</div></section>
 </div>
 <div id="portfolioPage" class="tab-page" hidden>
-<section class="panel"><h2>投資配置與目標管理</h2><p class="hint">各股票的已投資金額及目標投資金額可自行新增、修改及刪除，統計依此分頁的資料計算，不會改動交易損益紀錄。</p>
+<section class="panel"><h2>投資配置與目標管理</h2><p class="hint">每檔股票只需輸入已投資金額，系統自動加總；整體目標投資總金額只設定一次。</p>
 <div class="portfolio-summary"><article><span>已投資金額總計</span><strong id="portfolioInvestedTotal">NT$0</strong></article><article><span>目標投資總金額</span><strong id="portfolioTargetTotal">NT$0</strong></article><article><span>已投資金額佔目標比例</span><strong id="portfolioProgress">—</strong></article></div>
-<h2 id="portfolioFormTitle">新增股票投資配置</h2>
-<form id="portfolioForm"><div class="portfolio-form"><label>股票代號或名稱<input id="portfolioStock" maxlength="80" required placeholder="例如：2454 或 聯發科"></label><label>已投資金額（元）<input id="portfolioInvested" type="number" min="0" step="1" required placeholder="0"></label><label>目標投資總金額（元）<input id="portfolioTarget" type="number" min="0" step="1" required placeholder="0"></label></div><div class="actions"><button id="portfolioSave" class="btn" type="submit">＋ 新增股票</button><button id="portfolioCancel" class="btn light" type="button" hidden>取消修改</button></div></form>
+<div class="year-target-form"><label style="grid-column:span 2">整體目標投資總金額（元）<input id="portfolioGlobalTarget" type="number" min="0" step="1" placeholder="請輸入所有股票的共同目標"></label><button class="btn" type="button" id="portfolioTargetSave">儲存目標金額</button></div><h2 id="portfolioFormTitle">新增股票投資配置</h2>
+<form id="portfolioForm"><div class="portfolio-form"><label>股票代號或名稱<input id="portfolioStock" maxlength="80" required placeholder="例如：2454 或 聯發科"></label><label>已投資金額（元）<input id="portfolioInvested" type="number" min="0" step="1" required placeholder="0"></label></div><div class="actions"><button id="portfolioSave" class="btn" type="submit">＋ 新增股票</button><button id="portfolioCancel" class="btn light" type="button" hidden>取消修改</button></div></form>
 </section>
 <section class="panel"><div class="topbar"><h2>股票投資配置明細</h2><div class="actions" style="margin:0"><button id="portfolioBackup" class="btn light" type="button">備份配置 JSON</button><button id="portfolioImport" class="btn light" type="button">匯入配置 JSON</button><input id="portfolioFile" type="file" accept=".json,application/json" hidden></div></div>
-<div class="table-wrap" style="margin-top:24px"><table class="portfolio-table"><thead><tr><th>股票代號或名稱</th><th>已投資金額</th><th>目標投資金額</th><th>個股達成率</th><th>操作</th></tr></thead><tbody id="portfolioRows"></tbody></table></div><div id="portfolioEmpty" class="empty">尚未新增投資配置。</div><p class="notice">已投資占比＝已投資金額總計 ÷ 目標投資總金額 × 100%；個股達成率＝該股已投資金額 ÷ 該股目標金額 × 100%。目標為 0 時顯示「—」。資料只儲存在目前瀏覽器，建議定期備份。</p>
+<div class="table-wrap" style="margin-top:24px"><table class="portfolio-table"><thead><tr><th>股票代號或名稱</th><th>已投資金額</th><th>占已投資總額比例</th><th>操作</th></tr></thead><tbody id="portfolioRows"></tbody></table></div><div id="portfolioEmpty" class="empty">尚未新增投資配置。</div><p class="notice">整體目標達成率＝所有股票已投資金額加總 ÷ 自訂目標投資總金額 × 100%；個股配置占比＝該股票已投資金額 ÷ 所有股票已投資金額加總 × 100%。目標為 0 時顯示「—」。資料只儲存在目前瀏覽器，建議定期備份。</p>
 </section></div>
 </main>
 <script>
@@ -146,7 +146,8 @@ refresh=function(){nativeRefresh();syncDateDisplays()};
 defaultRange();refresh();syncDateDisplays();
 
 /* 投資配置：獨立於交易損益的本機資料 */
-const PORTFOLIO_KEY='stock-tracker-portfolio-v1';
+const PORTFOLIO_KEY='stock-tracker-portfolio-v1', PORTFOLIO_GOAL_KEY='stock-tracker-portfolio-global-goal-v1';
+let portfolioGoal=0;try{const v=JSON.parse(localStorage.getItem(PORTFOLIO_GOAL_KEY)||'0');if(Number.isSafeInteger(v)&&v>=0)portfolioGoal=v}catch{}
 let portfolio=[], portfolioEditing=null;
 try{const v=JSON.parse(localStorage.getItem(PORTFOLIO_KEY)||'[]');if(Array.isArray(v))portfolio=v}catch{alert('投資配置資料讀取失敗，請檢查備份。')}
 function showTab(which){
@@ -166,14 +167,15 @@ function portfolioReset(){
  $('portfolioSave').textContent='＋ 新增股票';$('portfolioCancel').hidden=true;
 }
 function portfolioRender(){
- let invested=0,target=0;
+ let invested=0; const target=portfolioGoal;
  const body=$('portfolioRows');body.replaceChildren();
- for(const p of portfolio){invested+=p.invested;target+=p.target;
+ const totalInvested=portfolio.reduce((sum,p)=>sum+p.invested,0);
+ for(const p of portfolio){invested+=p.invested;
   const tr=document.createElement('tr');
   const add=(t)=>{const td=document.createElement('td');td.textContent=t;tr.append(td);return td};
-  add(p.stock);add(fmt(p.invested));add(fmt(p.target));add(p.target>0?(p.invested/p.target*100).toFixed(2)+'%':'—');
+  add(p.stock);add(fmt(p.invested));add(totalInvested>0?(p.invested/totalInvested*100).toFixed(2)+'%':'—');
   const tools=add('');const edit=document.createElement('button');edit.className='tiny';edit.textContent='修改';edit.onclick=()=>{
-    portfolioEditing=p.id;$('portfolioStock').value=p.stock;$('portfolioInvested').value=p.invested;$('portfolioTarget').value=p.target;
+    portfolioEditing=p.id;$('portfolioStock').value=p.stock;$('portfolioInvested').value=p.invested;
     $('portfolioFormTitle').textContent='修改股票投資配置';$('portfolioSave').textContent='儲存修改';$('portfolioCancel').hidden=false;
     $('portfolioForm').scrollIntoView({behavior:'smooth',block:'center'});
   };
@@ -188,26 +190,33 @@ function portfolioRender(){
  $('portfolioEmpty').hidden=portfolio.length>0;
 }
 $('portfolioForm').onsubmit=e=>{
- e.preventDefault();const stock=$('portfolioStock').value.trim(),invested=Number($('portfolioInvested').value),target=Number($('portfolioTarget').value);
- if(!stock||![invested,target].every(n=>Number.isSafeInteger(n)&&n>=0)){alert('請輸入股票名稱及有效的非負整數金額。');return}
+ e.preventDefault();const stock=$('portfolioStock').value.trim(),invested=Number($('portfolioInvested').value);
+ if(!stock||!Number.isSafeInteger(invested)||invested<0){alert('請輸入股票名稱及有效的非負整數金額。');return}
  const duplicate=portfolio.find(p=>p.stock.toLowerCase()===stock.toLowerCase()&&p.id!==portfolioEditing);
  if(duplicate){alert('此股票已存在，請使用「修改」調整金額。');return}
- const prev=portfolio.slice(),entry={id:portfolioEditing||((globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random()),stock,invested,target};
+ const prev=portfolio.slice(),entry={id:portfolioEditing||((globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random()),stock,invested};
  if(portfolioEditing)portfolio=portfolio.map(p=>p.id===portfolioEditing?entry:p);else portfolio.push(entry);
  if(!portfolioSaveData()){portfolio=prev;return}portfolioReset();portfolioRender();
 };
 $('portfolioCancel').onclick=portfolioReset;
-$('portfolioBackup').onclick=()=>download('股票投資配置備份.json',JSON.stringify(portfolio,null,2),'application/json');
+$('portfolioGlobalTarget').value=portfolioGoal||'';
+$('portfolioTargetSave').onclick=()=>{const raw=$('portfolioGlobalTarget').value.trim(),v=Number(raw);if(!raw||!Number.isSafeInteger(v)||v<0){alert('請輸入有效的非負整數目標金額。');return}try{localStorage.setItem(PORTFOLIO_GOAL_KEY,JSON.stringify(v));portfolioGoal=v;portfolioRender();alert('整體目標金額已儲存')}catch{alert('目標金額儲存失敗')}};
+$('portfolioBackup').onclick=()=>download('股票投資配置備份.json',JSON.stringify({version:2,goal:portfolioGoal,stocks:portfolio.map(p=>({id:p.id,stock:p.stock,invested:p.invested}))},null,2),'application/json');
 $('portfolioImport').onclick=()=>$('portfolioFile').click();
 $('portfolioFile').onchange=async e=>{
  const f=e.target.files[0];if(!f)return;
  try{const v=JSON.parse(await f.text());
-  if(!Array.isArray(v)||!v.every(p=>p&&typeof p.id==='string'&&typeof p.stock==='string'&&p.stock.trim()&&Number.isSafeInteger(p.invested)&&p.invested>=0&&Number.isSafeInteger(p.target)&&p.target>=0))throw Error('配置備份格式不正確');
-  const ids=new Set(v.map(p=>p.id)),names=new Set(v.map(p=>p.stock.trim().toLowerCase()));
-  if(ids.size!==v.length||names.size!==v.length)throw Error('備份中有重複的股票或識別碼');
+  const arr=Array.isArray(v)?v:v?.stocks;
+  if(!Array.isArray(arr)||!arr.every(p=>p&&typeof p.id==='string'&&typeof p.stock==='string'&&p.stock.trim()&&Number.isSafeInteger(p.invested)&&p.invested>=0))throw Error('配置備份格式不正確');
+  const ids=new Set(arr.map(p=>p.id)),names=new Set(arr.map(p=>p.stock.trim().toLowerCase()));
+  if(ids.size!==arr.length||names.size!==arr.length)throw Error('備份中有重複的股票或識別碼');
   if(!confirm('匯入將取代目前的投資配置，不影響交易紀錄。建議先備份，確定繼續？'))return;
-  const prev=portfolio;portfolio=v.map(p=>({id:p.id,stock:p.stock.trim(),invested:p.invested,target:p.target}));
-  if(!portfolioSaveData()){portfolio=prev;return}portfolioReset();portfolioRender();alert('投資配置匯入完成');
+  const newGoal=Array.isArray(v)?portfolioGoal:v.goal;
+  if(!Number.isSafeInteger(newGoal)||newGoal<0)throw Error('目標總金額無效');
+  const prev=portfolio,oldGoal=portfolioGoal;portfolio=arr.map(p=>({id:p.id,stock:p.stock.trim(),invested:p.invested}));
+  if(!portfolioSaveData()){portfolio=prev;return}
+  try{localStorage.setItem(PORTFOLIO_GOAL_KEY,JSON.stringify(newGoal));portfolioGoal=newGoal}catch{portfolio=prev;portfolioSaveData();portfolioGoal=oldGoal;throw Error('目標金額儲存失敗')}
+  $('portfolioGlobalTarget').value=portfolioGoal||'';portfolioReset();portfolioRender();alert('投資配置匯入完成');
  }catch(err){alert('匯入失敗：'+err.message)}finally{e.target.value=''}
 };
 portfolioRender();
